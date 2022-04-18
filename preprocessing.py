@@ -4,37 +4,30 @@ import numpy as np
 import os
 
 # Path for the audio data
-audio_mnist_data = "/content/data"
+SC09_test = "/content/sc09/test"
+SC09_validate = "/content/sc09/valid"
 
 # Training Parameters:
 batch_size = 64
 epochs = 30
 
-# Empty dataset for audio after its loaded
 audio_dataset = []
 
-# Loading in the data
-for folder in os.listdir(audio_mnist_data):
-    audio_file_path = os.path.join(audio_mnist_data, folder)
-    for audio_file in os.listdir(audio_file_path):
-      # Opening the audio file
-      audio = wave.open(os.path.join(audio_file_path, audio_file), "rb")
-      
-      # Append to the audio dataset
-      audio_dataset.append(audio)
+def import_audio_dataset(dataset_path):
+  for audio_file in os.listdir(dataset_path):
+    # Opening the audio file
+    audio = wave.open(os.path.join(dataset_path, audio_file), "rb")
+        
+    # Append to the audio dataset
+    audio_dataset.append(audio)
 
-# Display the length of the audio dataset
+import_audio_dataset(SC09_test)        
+import_audio_dataset(SC09_validate)  
+
 print(len(audio_dataset))
-
-batch_10 = int(0.1*len(audio_dataset))
-
-# Get one batch of the total dataset that can be loaded and plotted as a waveform
-batch = audio_dataset[batch_10:]
-
-# Empty dataset for the waveforms that are plotted
 waveform_dataset = []
 
-for audio in batch:
+for audio in audio_dataset:
   # Checking configurations for the audio file
   # The framerate of the audio is 48 KHz
   audio_framerate = audio.getframerate()
@@ -50,22 +43,19 @@ for audio in batch:
   duration = np.linspace(start=0,
                   stop=len(audio_frames)/audio_framerate,
                   num=len(audio_frames))
-  
   # Close the audio file
   audio.close()
 
   # Title of Waveform
-  plt.figure(figsize=(15, 5))
+  plt.figure(figsize=(5, 5))
   plt.plot(duration, audio_signal)
-  
   # X and Y axis
   plt.xlabel("Time(Seconds)")
   plt.ylabel("Amplitude")
-  
-  # Plotting the waveform
+    
+  # Plot the Waveform
   waveform = plt.show()
-
-  # Appending the plot to the waveform_dataset
+  # Append the waveform to the waveform_dataset
   waveform_dataset.append(waveform)
 
 print(len(waveform_dataset))
