@@ -1,61 +1,58 @@
 import matplotlib.pyplot as plt
-import wave
+import librosa
 import numpy as np
 import os
 
 # Path for the audio data
 SC09_test = "/content/sc09/test"
-SC09_validate = "/content/sc09/valid"
+SC09_validation = "/content/sc09/valid"
 
 # Training Parameters:
 batch_size = 64
 epochs = 30
 
+# Datasets where the audio data and waveforms will be stored
 audio_dataset = []
-
-def import_audio_dataset(dataset_path):
-  for audio_file in os.listdir(dataset_path):
-    # Opening the audio file
-    audio = wave.open(os.path.join(dataset_path, audio_file), "rb")
-        
-    # Append to the audio dataset
-    audio_dataset.append(audio)
-
-import_audio_dataset(SC09_test)        
-import_audio_dataset(SC09_validate)  
-
-print(len(audio_dataset))
 waveform_dataset = []
 
-for audio in audio_dataset:
-  # Checking configurations for the audio file
-  # The framerate of the audio is 48 KHz
-  audio_framerate = audio.getframerate()
-  # Audio is 1-D also know as Mono
-  audio_channels = audio.getnchannels()
-  # Read the number of frames in the audio file
-  audio_frames = audio.readframes(-1)
-
-  # Convert our audio file to an array of integers in a specific type(int16)
-  audio_signal = np.frombuffer(audio_frames, dtype="int8")
-            
-  # Figure out the duration of length of the audio file
-  duration = np.linspace(start=0,
-                  stop=len(audio_frames)/audio_framerate,
-                  num=len(audio_frames))
-  # Close the audio file
-  audio.close()
-
-  # Title of Waveform
-  plt.figure(figsize=(5, 5))
-  plt.plot(duration, audio_signal)
-  # X and Y axis
-  plt.xlabel("Time(Seconds)")
-  plt.ylabel("Amplitude")
+# A function for reading in the data and displaying their waveforms
+def reading_audio(dataset):
+  i = 0 
+  for audio_file in os.listdir(dataset):
+    # Opening the audio file
+    audio, sampling_rate = librosa.core.load(os.path.join(dataset, audio_file), sr=16384)
     
-  # Plot the Waveform
-  waveform = plt.show()
-  # Append the waveform to the waveform_dataset
-  waveform_dataset.append(waveform)
+    # Checking if the sampling_rate is the same as the length of the audio, and if True then we will delete the file
+    if len(audio) < sampling_rate:
+      del audio
+    else:
+    # If its not true then we will continue with the reset of the script
+      duration = np.linspace(start=0,
+                    stop=len(audio)/sampling_rate,
+                    num=len(audio))
 
-print(len(waveform_dataset))
+      # Title of Waveform
+      plt.figure(figsize=(5, 5))
+      plt.plot(duration, audio)
+      # X and Y axis
+      plt.xlabel("Time(Seconds)")
+      plt.ylabel("Amplitude")
+
+      i += 1
+      print(i)
+          
+      # Plot the Waveform
+      waveform = plt.show()
+      
+      # Append the waveform to the waveform_dataset
+      waveform_dataset.append(waveform)
+
+      # Append to the audio dataset
+      audio_dataset.append(audio)  
+
+# Running the functions on the SC09 Test and Validation sets 
+reading_audio(SC09_test)
+reading_audio(SC09_validation)
+
+# Printing the length of the audio set to see the total amount of audio files
+print(len(audio_dataset))
