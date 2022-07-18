@@ -1,4 +1,9 @@
 def WGAN_GP(D_G_z, D_x, G_z, batch_size):
+  # Declaring G_loss and D_loss as global variables allowing the to function outside of WGAN-GP function
+  global G_loss 
+  global D_loss
+
+  # Generating Wasserstein Loss
   G_loss = -tf.reduce_mean(D_G_z)
   D_loss = tf.reduce_mean(D_G_z) - tf.reduce_mean(D_x)
 
@@ -7,6 +12,7 @@ def WGAN_GP(D_G_z, D_x, G_z, batch_size):
   difference = G_z - D_x
   interpolated = D_x + alpha * difference
 
+  # Capturing the gradient from the interpolation of the real dataset probability distribution and the generated data distribution
   with tf.GradientTape() as gradient_penalty_tape:
     gradient_penalty_tape.watch(interpolated)
     # Getting an output for interpolated data from Discriminator
@@ -22,6 +28,3 @@ def WGAN_GP(D_G_z, D_x, G_z, batch_size):
 
   # Appending Gradient Penalty to Critic/Discriminator
   D_loss += LAMBDA * gradient_penalty
-
-  return D_loss
-  return G_loss
