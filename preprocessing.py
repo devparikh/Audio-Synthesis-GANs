@@ -54,5 +54,9 @@ def reading_audio(dataset):
 reading_audio(SC09_test)
 reading_audio(SC09_validation)
 
+audio_dataset = np.asarray(audio_dataset)
+# getting shape of audio dataset array
+print(audio_dataset.shape)
+
 # Printing the length of the audio set to see the total amount of audio files
 print(len(audio_dataset))
