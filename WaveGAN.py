@@ -9,68 +9,80 @@ kernel_len = 25
 stride = 4
 channels = 1
 
-def Generator(input_vector):
-  # Initialize the model
-  model = Sequential()
-  # Input for the Generator
-  model.add(Input(tensor=input_vector, batch_size=64))
+import tensorflow as tf
+from keras.models import Sequential
+from keras.layers import Dense, Conv1D, Reshape, Conv1DTranspose, Input, Activation, LeakyReLU, ReLU
+from tensorflow.keras.optimizers import Adam
+import numpy as np
+
+model_dim = 64
+kernel_len = 25
+stride = 4
+channels = 1
+
+'''Generator Model'''
+
+# Initialize the model
+generator_model = Sequential()
+# Input for the Generator
+generator_model.add(Input(shape=(100,), batch_size=64, dtype="float32"))
   
-  # First Layer
-  model.add(Dense(256 * model_dim))
-  # Reshape Layer
-  model.add(Reshape(batch_size, [16, 16 * model_dim]))
-  model.add(Activation("relu"))
+# First Layer
+generator_model.add(Dense(256 * model_dim))
+# Reshape Layer
+generator_model.add(Reshape([16, 16 * model_dim]))
+generator_model.add(Activation("relu")) 
 
-  # Transposed Conv1D + ReLU
-  model.add(Conv1DTranspose(16 * model_dim, kernel_len, 4))
-  model.add(Activation("relu"))
+# Transposed Conv1D + ReLU
+generator_model.add(Conv1DTranspose(16 * model_dim, kernel_size=kernel_len, strides=stride, padding="valid"))
+generator_model.add(Activation("relu"))
 
-  # Transposed Conv1D + ReLU
-  model.add(Conv1DTranspose(8 * model_dim, kernel_len, 4))
-  model.add(Activation("relu"))
+# Transposed Conv1D + ReLU
+generator_model.add(Conv1DTranspose(8 * model_dim, kernel_size=kernel_len, strides=stride, padding="valid"))
+generator_model.add(Activation("relu"))
 
-  # Transposed Conv1D + ReLU
-  model.add(Conv1DTranspose(4 * model_dim, kernel_len, 4))
-  model.add(Activation("relu"))
+# Transposed Conv1D + ReLU
+generator_model.add(Conv1DTranspose(4 * model_dim, kernel_size=kernel_len, strides=stride, padding="valid"))
+generator_model.add(Activation("relu"))
 
-  # Transposed Conv1D + ReLU
-  model.add(Conv1DTranspose(2 * model_dim, kernel_len, 4))
-  model.add(Activation("relu"))
+# Transposed Conv1D + ReLU
+generator_model.add(Conv1DTranspose(2 * model_dim, kernel_size=kernel_len, strides=stride, padding="valid"))
+generator_model.add(Activation("relu"))
 
-  # Transposed Conv1D + Tanh
-  model.add(Conv1DTranspose(model_dim, kernel_len, 4, channels))
-  model.add(Activation("tanh"))
+# Transposed Conv1D + Tanh
+generator_model.add(Conv1DTranspose(channels, kernel_size=kernel_len, strides=stride, padding="valid"))
+generator_model.add(Activation("tanh"))
 
-def Discriminator(input_data):
-  model = Sequential()
-  # Input layer
-  model.add(Input(shape=(4620, 16384), batch_size=64, dtype="float32"))
+'''Discriminator Model'''
+discriminator_model = Sequential()
+# Input layer
+discriminator_model.add(Input(shape=(16384, channels), batch_size=64))
   
-  # Conv1D + LeakyReLU
-  model.add(Conv1D(model_dim, kernel_len, 4, channels))
-  model.add(LeakyReLU(alpha=0.2))
+# Conv1D + LeakyReLU
+discriminator_model.add(Conv1D(model_dim, kernel_size=kernel_len, strides=stride, padding="same"))
+discriminator_model.add(LeakyReLU(alpha=0.2))
 
-  # Conv1D + LeakyReLU
-  model.add(Conv1D(2 * model_dim, kernel_len, 4))
-  model.add(LeakyReLU(alpha=0.2))
+# Conv1D + LeakyReLU
+discriminator_model.add(Conv1D(2 * model_dim, kernel_size=kernel_len, strides=stride, padding="same"))
+discriminator_model.add(LeakyReLU(alpha=0.2))
 
-  # Conv1D + LeakyReLU
-  model.add(Conv1D(4 * model_dim, kernel_len, 4))
-  model.add(LeakyReLU(alpha=0.2))
+# Conv1D + LeakyReLU
+discriminator_model.add(Conv1D(4 * model_dim, kernel_size=kernel_len, strides=stride, padding="same"))
+discriminator_model.add(LeakyReLU(alpha=0.2))
 
-  # Conv1D + LeakyReLU
-  model.add(Conv1D(8 * model_dim, kernel_len, 4))
-  model.add(LeakyReLU(alpha=0.2))
+# Conv1D + LeakyReLU
+discriminator_model.add(Conv1D(8 * model_dim, kernel_size=kernel_len, strides=stride, padding="same"))
+discriminator_model.add(LeakyReLU(alpha=0.2))
 
-  # Conv1D + LeakyReLU
-  model.add(Conv1D(16 * model_dim, kernel_len, 4))
-  model.add(LeakyReLU(alpha=0.2))
+# Conv1D + LeakyReLU
+discriminator_model.add(Conv1D(16 * model_dim, kernel_size=kernel_len, strides=stride, padding="same"))
+discriminator_model.add(LeakyReLU(alpha=0.2))
 
-  # Reshape layer
-  model.add(Reshape(256 * model_dim))
+# Reshape layer
+discriminator_model.add(Reshape([batch_size, -1]))
 
-  # Output(Dense) layer
-  model.add(Dense(256 * model_dim))
+# Output(Dense) layer
+discriminator_model.add(Dense(1))
 
 '''Training WaveGAN'''
 
