@@ -57,4 +57,4 @@ Generator’s WGAN Loss: Max(D(G(z)))
 Discriminator Loss: Max(D(x)) - Min(D(G(z)))
 
 
-# If you want to get a deeper look into the specific configuration of my implementation of WaveGAN, how WGAN works, and the code for this project then check out my article.
+#If you want to get a deeper look into the specific configuration of my implementation of WaveGAN, how WGAN works, and the code for this project then check out my article.
