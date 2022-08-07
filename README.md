@@ -1,6 +1,6 @@
 # What is WaveGAN?
 
-WaveGAN are a variant of DCGANs that generates multi-second audio waveforms, they are a specific niche that hasn't been touched by other GANs in the space which primarily focus on visual data. It's official paper is Adverserial Audio Synthesis where the authors talk about the applications of GANs in arts more specifically music and speech through this model, explaining the loss function used by WaveGANs WGAN-GP(Wasserstein GAN + Gradient Penalty) although I implemented WGAN which ensures greater training stability, more informative gradients for backpropogating the models during training due to the difference between Jensen-Shannon Divergence and Wasserstein Distance.
+WaveGAN are a variant of DCGANs that generates multi-second audio waveforms, they are a specific niche that hasn't been touched by other GANs in the space which primarily focus on visual data. It's official paper is Adverserial Audio Synthesis where the authors talk about the applications of GANs in arts more specifically music and speech through this model, explaining the loss function used by WaveGANs WGAN-GP(Wasserstein GAN + Gradient Penalty) which ensures greater training stability, more informative gradients for backpropogating the models during training due to the difference between Jensen-Shannon Divergence and Wasserstein Distance.
 
 # Key architectural differences between DCGAN and WaveGAN:
 - 2D Convolutions/Transposed Convolutions are flattened to 1D in the Discriminator and Generator respectively
@@ -77,12 +77,12 @@ Layer 16: Reshape Layer
 Layer 17: Dense Layer(Output layer)
 
 # WaveGAN’s Optimizer and Loss Functions:
-WaveGAN’s optimizer is Adam although when using WGAN loss I used RMSProps. The parameters of RMSProps for the Generator and Discriminator is a learning_rate of 5e-5. 
+WaveGAN’s optimizer is Adam. The parameters of Adam for the Generator and Discriminator is a learning_rate of 1e-4, beta_1 is 0.5 and beta_2 is 0.9. 
 
 For my implementation, I used WGAN instead of WGAN-GP recommended by the paper.
 
 Generator’s Loss: Max(D(G(z)))
 
-Discriminator Loss: Max(D(x)) - Min(D(G(z)))
+Discriminator Loss: Max(D(x)) - Min(D(G(z))) + Enforcing the Lipschitz contiunity through Gradient Penalty
 
-If you want to get a deeper look into the specific configuration of my implementation of WaveGAN, how WGAN works, and the code for this project then check out my article.
+If you want to get a deeper look into the specific configuration of my implementation of WaveGAN, how WGAN-GP works, and the code for this project then check out my article.
