@@ -54,9 +54,9 @@ def reading_audio(dataset):
 reading_audio(SC09_test)
 reading_audio(SC09_validation)
 
-audio_dataset = np.asarray(audio_dataset)
-# getting shape of audio dataset array
-print(audio_dataset.shape)
+# Only taking 4608 samples from the audio training set because that can be batched into 72 batches of 64 samples for training
+audio_dataset = audio_dataset[:4608]
 
-# Printing the length of the audio set to see the total amount of audio files
+audio_dataset = np.asarray(audio_dataset)
+audio_dataset = np.resize(audio_dataset, (len(audio_dataset), 16384, 1))
 print(len(audio_dataset))
