@@ -78,11 +78,6 @@ discriminator_model.add(Dense(1))
 '''Training WaveGAN'''
 
 # Training Parameters
-batch_size = 64
-latent_dim = 100
-epochs = 72
-
-# Training Parameters
 latent_dim = 100
 epochs = 72
 batch_size = 64
