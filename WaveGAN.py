@@ -91,26 +91,26 @@ batch_count = 0
 start_point = 0
 batch_set = []
 
-for batches in range(0, 60):
+for batches in range(0, 72):
   batch = audio_dataset[start_point:(start_point+64)]
   batch_set.append(batch)
   start_point += 64
 
 # Defining Discriminator Optimizer
 Discriminator_Optimizer = tf.keras.optimizers.Adam(
-        learning_rate=1e-4,
+        learning_rate=1e-4, 
         beta_1=0.5,
         beta_2=0.9)
   
   
 # Defining Generator Optimizer
 Generator_Optimizer = tf.keras.optimizers.Adam(
-        learning_rate=1e-4,
+        learning_rate=1e-4, 
         beta_1=0.5,
         beta_2=0.9)
 
 for epoch in range(1, epochs+1):
-  print("\n Epoch # {}".format(epoch))
+  print("\nEpoch # {}".format(epoch))
   print("-------------------------------------")
   i = 5
   batch_count += 1 
@@ -132,12 +132,36 @@ for epoch in range(1, epochs+1):
       D_tape.watch(D_G_Output)
       
       # Getting predictions from the Discriminator
-      D_X = discriminator_model(batch_set[batch_count])
+      batch = batch_set[batch_count]
+      D_X = discriminator_model(batch)
       D_tape.watch(D_X)
       
       D_tape.watch(Discriminator_Variables)
 
+    # Calculating WGAN for Discriminator
     D_loss =  tf.reduce_mean(D_X) - tf.reduce_mean(D_G_Output)
+
+    # Enforcing Gradient Penalty
+    alpha = tf.random.normal([1, 1, 1], 0.0, 1.0)
+    difference = batch - G_O
+    interpolated = batch + (alpha * difference)
+
+    # Capturing the gradient from the interpolation of the real dataset probability distribution and the generated data distribution
+    with tf.GradientTape() as gradient_penalty_tape:
+      gradient_penalty_tape.watch(interpolated)
+      # Getting an output for interpolated data from Discriminator
+      penalty_prediction = discriminator_model(interpolated)
+
+    # Calculating the gradient of the interpolated data
+    gradients = gradient_penalty_tape.gradient(penalty_prediction, [interpolated])[0]
+    gradient_norm = tf.sqrt(tf.reduce_sum(tf.square(gradients), axis=[1, 2]))
+    gradient_penalty = tf.reduce_mean((gradient_norm - 1.0) ** 2)
+
+    # A Lambda value added to the gradient penalty to weight it
+    LAMBDA = 10
+
+    # Appending Gradient Penalty to Critic/Discriminator
+    D_loss += LAMBDA * gradient_penalty
 
     D_grad = D_tape.gradient([D_G_Output, D_X], Discriminator_Variables)
     D_backprop = Discriminator_Optimizer.apply_gradients(zip(D_grad, Discriminator_Variables))
