@@ -13,38 +13,69 @@ WaveGAN are a variant of DCGANs that generates multi-second audio waveforms, the
 # WaveGAN Architecture:
 
 Generator Model:
+
 Layer 1: Input Layer — Takes in a latent vector in uniform distribution (-1,1)
+
 Layer 2: Dense Layer 
+
 Layer 3: Reshape Layer
+
 Layer 4: ReLU Activation Function
+
 Layer 5: Transposed Convolutional 1D layer(Stride=4, Kernel Size=25 pixels)
+
 Layer 4: ReLU Activation Function
+
 Layer 5: Transposed Convolutional 1D layer(Stride=4, Kernel Size=25 pixels)
+
 Layer 4: ReLU Activation Function
+
 Layer 5: Transposed Convolutional 1D layer(Stride=4, Kernel Size=25 pixels)
+
 Layer 4: ReLU Activation Function
+
 Layer 5: Transposed Convolutional 1D layer(Stride=4, Kernel Size=25 pixels)
+
 Layer 4: ReLU Activation Function
+
 Layer 5: Transposed Convolutional 1D layer(Stride=4, Kernel Size=25 pixels)
+
 Layer 4: Tanh Activation Function(Output Layer)
 
 Discriminator Model:
+
 Layer 1: Input Layer — Takes as input generated data from Generator or real data
+
 Layer 2: Convolutional 1D Layer(Stride=4, Kernel Size=25 pixel)
+
 Layer 3: LeakyReLU Activation Function
+
 Layer 4: Phase Shuffle(n=2)
+
 Layer 5: Convolutional 1D Layer(Stride=4, Kernel Size=25 pixel)
+
 Layer 6: LeakyReLU Activation Function
+
 Layer 7: Phase Shuffle(n=2)
+
 Layer 8: Convolutional 1D Layer(Stride=4, Kernel Size=25 pixel)
+
 Layer 9: LeakyReLU Activation Function
+
 Layer 10: Phase Shuffle(n=2)
+
 Layer 11: Convolutional 1D Layer(Stride=4, Kernel Size=25 pixel)
+
 Layer 12: LeakyReLU Activation Function
+
 Layer 13: Phase Shuffle(n=2)
+
 Layer 14: Convolutional 1D Layer(Stride=4, Kernel Size=25 pixel)
+
 Layer 15: LeakyReLU Activation Function
+
 Layer 16: Reshape Layer
+
 Layer 17: Dense Layer(Output layer)
 
 # WaveGAN’s Optimizer and Loss Functions:
@@ -55,6 +86,5 @@ For my implementation, I used WGAN instead of WGAN-GP recommended by the paper.
 Generator’s WGAN Loss: Max(D(G(z)))
 
 Discriminator Loss: Max(D(x)) - Min(D(G(z)))
-
 
 If you want to get a deeper look into the specific configuration of my implementation of WaveGAN, how WGAN works, and the code for this project then check out my article https://medium.com/p/49ec42a80340/edit.
