@@ -1,4 +1,4 @@
-# Audio-Synthesis-GANs
+Audio-Synthesis-GANs
 
 # What is WaveGAN?
 
