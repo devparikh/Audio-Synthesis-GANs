@@ -83,8 +83,8 @@ WaveGAN’s optimizer is Adam although when using WGAN loss I used RMSProps. The
 
 For my implementation, I used WGAN instead of WGAN-GP recommended by the paper.
 
-Generator’s WGAN Loss: Max(D(G(z)))
+Generator’s Loss: Max(D(G(z)))
 
 Discriminator Loss: Max(D(x)) - Min(D(G(z)))
 
-If you want to get a deeper look into the specific configuration of my implementation of WaveGAN, how WGAN works, and the code for this project then check out my article https://medium.com/p/49ec42a80340/edit.
+If you want to get a deeper look into the specific configuration of my implementation of WaveGAN, how WGAN works, and the code for this project then check out my article.
