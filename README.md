@@ -85,4 +85,4 @@ Generator’s Loss: Max(D(G(z)))
 
 Discriminator Loss: Max(D(x)) - Min(D(G(z))) + Enforcing the Lipschitz contiunity through Gradient Penalty
 
-If you want to get a deeper look into the specific configuration of my implementation of WaveGAN, how WGAN-GP works, and the code for this project then check out my article.
+If you want to get a deeper look into the specific configuration of my implementation of WaveGAN, how WGAN-GP works, and the code for this project then check out my article https://devparikh21.medium.com/synthesizing-realistic-audio-using-wavegans-49ec42a80340.
