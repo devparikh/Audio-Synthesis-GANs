@@ -80,6 +80,8 @@ Layer 17: Dense Layer(Output layer)
 # WaveGAN’s Optimizer and Loss Functions:
 WaveGAN’s optimizer is Adam. The parameters of Adam for the Generator and Discriminator is a learning_rate of 1e-4, beta_1 is 0.5 and beta_2 is 0.9. 
 
+![image](https://user-images.githubusercontent.com/47342287/183469991-458446a0-0d76-4353-be2d-2d706bb10579.png)
+
 Generator’s Loss: Max(D(G(z)))
 
 Discriminator Loss: Max(D(x)) - Min(D(G(z))) + Enforcing the Lipschitz contiunity through Gradient Penalty
