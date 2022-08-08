@@ -1,4 +1,5 @@
 # What is WaveGAN?
+![image](https://user-images.githubusercontent.com/47342287/183469786-10f210e3-cdd7-4d8d-ab64-47db73965104.png)
 
 WaveGAN are a variant of DCGANs that generates multi-second audio waveforms, they are a specific niche that hasn't been touched by other GANs in the space which primarily focus on visual data. It's official paper is Adverserial Audio Synthesis where the authors talk about the applications of GANs in arts more specifically music and speech through this model, explaining the loss function used by WaveGANs WGAN-GP(Wasserstein GAN + Gradient Penalty) which ensures greater training stability, more informative gradients for backpropogating the models during training due to the difference between Jensen-Shannon Divergence and Wasserstein Distance.
 
