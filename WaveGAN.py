@@ -43,37 +43,63 @@ generator_model.add(Activation("relu"))
 generator_model.add(Conv1DTranspose(channels, kernel_size=kernel_len, strides=stride, padding="same"))
 generator_model.add(Activation("tanh"))
 
+def phaseshuffle(input, n=2, pad_type="reflect"):
+  batch, len, channels = list(input.shape)
+
+  phase = tf.random.uniform([], minval=-n, maxval=n + 1, dtype=tf.int32)
+  pad_l = tf.maximum(phase, 0)
+  pad_r = tf.maximum(-phase, 0)
+  phase_start = pad_r
+  input = tf.pad(input, [[0, 0], [pad_l, pad_r], [0, 0]], mode=pad_type)
+
+  input = input[:, phase_start:phase_start+len]
+  input.set_shape([batch, len, channels])
+
+  return input
 
 '''Discriminator Model'''
-discriminator_model = Sequential()
+
 # Input layer
-discriminator_model.add(Input(shape=(16384, channels), dtype="float32"))
-  
-# Conv1D + LeakyReLU
-discriminator_model.add(Conv1D(model_dim, kernel_size=kernel_len, strides=stride, padding="same"))
-discriminator_model.add(LeakyReLU(alpha=0.2))
+Input_Layer = Input(shape=(16384, channels), dtype="float32")
+    
+# Conv1D + LeakyReLU + Phase Shuffle
+Convolutional_1 = Conv1D(model_dim, kernel_size=kernel_len, strides=stride, padding="same")(Input_Layer)
+Dropout = Dropout(0.5)(Convolutional_1)
+Batch_Norm = BatchNormalization()(Dropout)
+Leaky_ReLU = LeakyReLU(alpha=0.2)(Batch_Norm)
+Phase_Shuffle = phaseshuffle(Leaky_ReLU)
+
+# Conv1D + LeakyReLU + Phase Shuffle
+Convolutional_2 = Conv1D(2 * model_dim, kernel_size=kernel_len, strides=stride, padding="same")(Phase_Shuffle)
+Batch_Norm_2 = BatchNormalization()(Convolutional_2)
+Leaky_ReLU_2 = LeakyReLU(alpha=0.2)(Batch_Norm_2)
+Phase_Shuffle_2 = phaseshuffle(Leaky_ReLU_2)
+
+# Conv1D + LeakyReLU + Phase Shuffle
+Convolutional_3 = Conv1D(4 * model_dim, kernel_size=kernel_len, strides=stride, padding="same")(Phase_Shuffle_2)
+Batch_Norm_3 = BatchNormalization()(Convolutional_3)
+Leaky_ReLU_3 = LeakyReLU(alpha=0.2)(Batch_Norm_3)
+Phase_Shuffle_3 = phaseshuffle(Leaky_ReLU_3)
 
 # Conv1D + LeakyReLU
-discriminator_model.add(Conv1D(2 * model_dim, kernel_size=kernel_len, strides=stride, padding="same"))
-discriminator_model.add(LeakyReLU(alpha=0.2))
+Convolutional_4 = Conv1D(8 * model_dim, kernel_size=kernel_len, strides=stride, padding="same")(Phase_Shuffle_3)
+Batch_Norm_4 = BatchNormalization()(Convolutional_4)
+Leaky_ReLU_4 = LeakyReLU(alpha=0.2)(Batch_Norm_4)
+Phase_Shuffle_4 = phaseshuffle(Leaky_ReLU_4)
 
 # Conv1D + LeakyReLU
-discriminator_model.add(Conv1D(4 * model_dim, kernel_size=kernel_len, strides=stride, padding="same"))
-discriminator_model.add(LeakyReLU(alpha=0.2))
-
-# Conv1D + LeakyReLU
-discriminator_model.add(Conv1D(8 * model_dim, kernel_size=kernel_len, strides=stride, padding="same"))
-discriminator_model.add(LeakyReLU(alpha=0.2))
-
-# Conv1D + LeakyReLU
-discriminator_model.add(Conv1D(16 * model_dim, kernel_size=kernel_len, strides=stride, padding="same"))
-discriminator_model.add(LeakyReLU(alpha=0.2))
+Convolutional_5 = Conv1D(16 * model_dim, kernel_size=kernel_len, strides=stride, padding="same")(Phase_Shuffle_4)
+Batch_Norm_5 = BatchNormalization()(Convolutional_5)
+Leaky_ReLU_5 = LeakyReLU(alpha=0.2)(Batch_Norm_5)
+Phase_Shuffle_5 = phaseshuffle(Leaky_ReLU_5)
 
 # Reshape layer
-discriminator_model.add(Reshape([-1]))
+Reshape_Layer = Reshape([-1])(Phase_Shuffle_5)
 
 # Output(Dense) layer
-discriminator_model.add(Dense(1))
+Output_Layer = Dense(1)(Reshape_Layer)
+
+discriminator_model = tf.keras.Model(inputs=Input_Layer, outputs=Output_Layer)
 
 '''Training WaveGAN'''
 
